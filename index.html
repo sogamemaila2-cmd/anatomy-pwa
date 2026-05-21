@@ -1,187 +1,33 @@
 <!doctype html>
-<html lang="zh-HK">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport"
-    content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <title>Anatomy PWA — Wound Care</title>
-  <meta name="theme-color" content="#0b1220" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="manifest" href="/anatomy-pwa/manifest.json" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>GLB Test</title>
   <style>
-    :root {
-      --bg:#0b1220; --panel:rgba(15,23,42,.93); --line:rgba(255,255,255,.1);
-      --text:#e2e8f0; --muted:#94a3b8; --accent:#22c55e;
+    body { margin:0; background:#111; }
+    canvas { display:block; width:100vw; height:100vh; }
+    #ui {
+      position:fixed; top:10px; left:10px; z-index:10;
+      display:flex; flex-direction:column; gap:8px;
     }
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    html,body{width:100%;height:100%;overflow:hidden;
-      background:var(--bg);color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-    canvas{display:block;width:100%;height:100%}
-
-    /* ── LEFT PANEL ── */
-    #lp{
-      position:fixed;top:10px;left:10px;z-index:20;
-      width:min(230px,calc(46vw - 14px));
-      background:var(--panel);border:1px solid var(--line);
-      border-radius:14px;padding:11px;
-      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-      display:flex;flex-direction:column;gap:9px;
-      max-height:calc(100vh - 20px);overflow-y:auto;
+    label, #msg {
+      background:rgba(0,0,0,.7); color:#fff;
+      padding:8px 12px; border-radius:8px; font-size:13px;
+      font-family:sans-serif; cursor:pointer;
     }
-    .ptitle{font-size:13px;font-weight:700;color:var(--text);letter-spacing:.04em}
-    .sep{border:none;border-top:1px solid var(--line)}
-
-    /* Layer buttons */
-    .layer-grid{display:flex;flex-direction:column;gap:4px}
-    .lb{
-      display:flex;align-items:center;gap:7px;
-      padding:6px 9px;border-radius:9px;border:1px solid var(--line);
-      background:#111827;color:var(--text);font-size:12px;
-      cursor:pointer;user-select:none;transition:opacity .15s
-    }
-    .lb.off{opacity:.35}
-    .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
-    .ds{background:#f97316} .df{background:#eab308}
-    .dm{background:#ef4444} .dt{background:#a3e635}
-    .db{background:#94a3b8} .dv{background:#f43f5e}
-    .du{background:#475569}
-
-    /* Control buttons */
-    .cg{display:grid;grid-template-columns:1fr 1fr;gap:4px}
-    .cb{
-      padding:7px 4px;text-align:center;border-radius:9px;
-      border:1px solid var(--line);background:#1e293b;
-      color:var(--text);font-size:11px;cursor:pointer;transition:background .15s
-    }
-    .cb.on{background:#065f46;border-color:#10b981}
-
-    /* DPR */
-    .dr{display:flex;gap:4px}
-    .db2{
-      flex:1;padding:6px;text-align:center;border-radius:9px;
-      border:1px solid var(--line);background:#1e293b;
-      color:var(--text);font-size:11px;cursor:pointer
-    }
-    .db2.on{background:#1d4ed8;border-color:#3b82f6}
-
-    /* Load */
-    .ll{display:flex;flex-direction:column;gap:4px}
-    .lbtn{
-      padding:7px;border-radius:9px;border:1px solid var(--line);
-      background:#1e293b;color:var(--text);font-size:12px;
-      cursor:pointer;text-align:center
-    }
-
-    #loadst{font-size:11px;color:var(--accent);min-height:15px}
-    #stats{font-size:11px;color:var(--muted);line-height:1.65;white-space:pre-wrap}
-
-    /* ── RIGHT INFO PANEL ── */
-    #rp{
-      position:fixed;top:10px;right:10px;z-index:20;
-      width:min(300px,calc(50vw - 14px));
-      background:var(--panel);border:1px solid var(--line);
-      border-radius:14px;padding:14px;
-      backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-      display:flex;flex-direction:column;gap:8px;
-      max-height:calc(100vh - 20px);overflow-y:auto;
-      transition:opacity .2s
-    }
-    #rp.empty{opacity:.45}
-
-    .iname{font-size:16px;font-weight:700;color:#f1f5f9}
-    .ien{font-size:12px;color:var(--muted)}
-    .badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
-    .lbadge{
-      font-size:11px;font-weight:600;padding:2px 9px;
-      border-radius:20px;background:#1e293b;border:1px solid var(--line);color:var(--text)
-    }
-    .rbadge{
-      font-size:11px;font-weight:700;padding:3px 10px;
-      border-radius:20px;color:#fff
-    }
-    .r-high{background:#ef4444}
-    .r-critical{background:#dc2626}
-    .r-medium{background:#d97706;color:#111}
-    .r-low{background:#16a34a}
-    .r-unknown{background:#475569}
-
-    .isec{display:flex;flex-direction:column;gap:3px}
-    .ilabel{font-size:10px;font-weight:700;color:var(--muted);
-      text-transform:uppercase;letter-spacing:.06em}
-    .ival{font-size:12px;color:var(--text);line-height:1.5}
-    .ctip{
-      background:rgba(59,130,246,.12);border-left:3px solid #3b82f6;
-      padding:8px 10px;border-radius:0 8px 8px 0;
-      font-size:12px;color:#93c5fd;line-height:1.5
-    }
-    .ehint{font-size:13px;color:var(--muted);text-align:center;padding:14px 0}
-
-    /* HINT */
-    #hint{
-      position:fixed;bottom:10px;left:50%;transform:translateX(-50%);
-      z-index:20;font-size:11px;color:#cbd5e1;
-      background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.08);
-      padding:6px 14px;border-radius:20px;pointer-events:none;white-space:nowrap
-    }
+    #msg { color:#4ade80; min-height:18px; }
   </style>
 </head>
 <body>
 <canvas id="c"></canvas>
-
-<!-- LEFT -->
-<div id="lp">
-  <div class="ptitle">🦴 Anatomy PWA</div>
-  <hr class="sep"/>
-
-  <div class="ll">
-    <button class="lbtn" id="loadDef">Load foot_ankle.glb</button>
-    <label class="lbtn" style="cursor:pointer">
-      📂 Load local GLB
-      <input id="fi" type="file" accept=".glb,.gltf" style="display:none"/>
-    </label>
-  </div>
-  <div id="loadst">Status: idle</div>
-  <hr class="sep"/>
-
-  <div class="ptitle">Layers</div>
-  <div class="layer-grid">
-    <button class="lb" data-layer="skin">  <span class="dot ds"></span>皮膚 Skin</button>
-    <button class="lb" data-layer="fascia"><span class="dot df"></span>筋膜 Fascia</button>
-    <button class="lb" data-layer="muscle"><span class="dot dm"></span>肌肉 Muscle</button>
-    <button class="lb" data-layer="tendon"><span class="dot dt"></span>肌腱 Tendon</button>
-    <button class="lb" data-layer="bone">  <span class="dot db"></span>骨 Bone</button>
-    <button class="lb" data-layer="vessel"><span class="dot dv"></span>血管 Vessel</button>
-  </div>
-  <hr class="sep"/>
-
-  <div class="ptitle">Controls</div>
-  <div class="cg">
-    <button class="cb" id="arBtn">⟳ Auto rotate</button>
-    <button class="cb" id="wfBtn">⬡ Wireframe</button>
-    <button class="cb" id="rcBtn">↺ Reset cam</button>
-    <button class="cb" id="pbBtn">⏸ Pause BG</button>
-  </div>
-  <div class="dr">
-    <button class="db2 on" data-dpr="1">Low</button>
-    <button class="db2"    data-dpr="1.5">Mid</button>
-    <button class="db2"    data-dpr="2">High</button>
-  </div>
-  <hr class="sep"/>
-  <pre id="stats">FPS: —
-Draw calls: —
-Triangles: —
-Meshes: —
-Textures: —</pre>
+<div id="ui">
+  <label>
+    📂 選 GLB 檔案
+    <input id="fi" type="file" accept=".glb,.gltf" style="display:none"/>
+  </label>
+  <div id="msg">等待載入...</div>
 </div>
-
-<!-- RIGHT -->
-<div id="rp" class="empty">
-  <div class="ehint">👆 Tap a structure<br/>to see anatomy info</div>
-</div>
-
-<div id="hint">Drag = orbit · Pinch = zoom · Tap = info</div>
 
 <script type="module">
 import * as THREE from
@@ -191,306 +37,118 @@ import { OrbitControls } from
 import { GLTFLoader } from
   'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
 
+const msg = document.getElementById('msg');
+
 // ── Renderer ──
-const canvas = document.getElementById('c');
 const renderer = new THREE.WebGLRenderer({
-  canvas, antialias:true, powerPreference:'high-performance'
+  canvas: document.getElementById('c'),
+  antialias: true
 });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.setClearColor(0x0b1220,1);
-renderer.setPixelRatio(1);
+renderer.setClearColor(0x111111);
 
 const scene  = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.01, 100);
-camera.position.set(0, 0.5, 2.8);
+const camera = new THREE.PerspectiveCamera(
+  45, window.innerWidth / window.innerHeight, 0.001, 1000
+);
+camera.position.set(0, 1, 3);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.dampingFactor = 0.08;
-controls.minDistance   = 0.3;
-controls.maxDistance   = 8;
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0x334466, 1.2));
-const dir = new THREE.DirectionalLight(0xffffff,1.8);
-dir.position.set(3,5,4); scene.add(dir);
-const fill = new THREE.DirectionalLight(0x8899ff,0.5);
-fill.position.set(-3,1,-2); scene.add(fill);
-scene.add(new THREE.GridHelper(5,20,0x1e293b,0x0f172a));
+// Lighting
+scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+const dir = new THREE.DirectionalLight(0xffffff, 2);
+dir.position.set(5, 10, 5);
+scene.add(dir);
 
-// ── State ──
-const root     = new THREE.Group(); scene.add(root);
-const layerVis = {skin:true,fascia:true,muscle:true,tendon:true,bone:true,vessel:true,unknown:true};
-let annotations={}, running=true, animId=null;
-let fps=0,fpsAcc=0,fpsF=0,lastTs=performance.now();
-let objUrl=null, wfOn=false, pauseBg=false;
-
-// ── Load annotations ──
-fetch('./data/annotations.json')
-  .then(r=>r.json()).then(d=>{annotations=d;})
-  .catch(()=>console.warn('annotations.json not found'));
-
-// ── DOM ──
-const statusEl = document.getElementById('loadst');
-const statsEl  = document.getElementById('stats');
-const rp       = document.getElementById('rp');
-
-function setStatus(msg,col='#22c55e'){
-  statusEl.style.color=col;
-  statusEl.textContent='Status: '+msg;
-}
-
-function resize(){
-  const w=innerWidth,h=innerHeight;
-  camera.aspect=w/h; camera.updateProjectionMatrix();
-  renderer.setSize(w,h,false);
-}
-
-function disposeObj(o){
-  if(!o.isMesh)return;
-  o.geometry?.dispose();
-  const ms=Array.isArray(o.material)?o.material:[o.material];
-  ms.forEach(m=>{
-    if(!m)return;
-    Object.values(m).forEach(v=>{if(v?.isTexture)v.dispose();});
-    m.dispose?.();
-  });
-}
-
-function clearRoot(){
-  root.traverse(disposeObj);
-  while(root.children.length)root.remove(root.children[0]);
-}
-
-function normalize(obj){
-  const box=new THREE.Box3().setFromObject(obj);
-  const sz=new THREE.Vector3(),ctr=new THREE.Vector3();
-  box.getSize(sz);box.getCenter(ctr);
-  obj.position.sub(ctr);
-  obj.scale.setScalar(1.6/(Math.max(sz.x,sz.y,sz.z)||1));
-  new THREE.Box3().setFromObject(obj).getCenter(ctr);
-  obj.position.sub(ctr);
-}
-
-function meshLayer(mesh){
-  const n=(mesh.name||'').toLowerCase();
-  if(/skin|derm|epiderm|integument|heel/.test(n))    return 'skin';
-  if(/fascia|aponeurosis/.test(n))                   return 'fascia';
-  if(/muscle|muscul|tibialis|peroneus|soleus|gastrocnem|flexor|extensor/.test(n)) return 'muscle';
-  if(/tendon|achilles|calcaneal/.test(n))            return 'tendon';
-  if(/bone|calcaneus|metatarsal|tarsal|phalanx|tibia|fibula|talus|navicular/.test(n)) return 'bone';
-  if(/vessel|artery|vein|blood|vascular|saphenous/.test(n)) return 'vessel';
-  return 'unknown';
-}
-
-function applyLayerVis(){
-  root.traverse(o=>{if(o.isMesh)o.visible=layerVis[meshLayer(o)]!==false;});
-}
-
-function applyWireframe(on){
-  root.traverse(o=>{
-    if(!o.isMesh)return;
-    const ms=Array.isArray(o.material)?o.material:[o.material];
-    ms.forEach(m=>{if(m)m.wireframe=on;});
-  });
-}
-
-function getAnn(name){
-  const k=Object.keys(annotations).find(k=>
-    name.toLowerCase().includes(k.toLowerCase())
-  );
-  return annotations[k]||annotations['default']||{
-    zh:name||'未命名',en:name,layer:'unknown',
-    notes:'尚無 annotation',wound_risk:'unknown',
-    pressure_injury_stage:'—',blood_supply:'—',
-    clinical_tip:'請在 annotations.json 加入此 mesh name'
-  };
-}
-
-function rClass(r){
-  const m={high:'r-high',critical:'r-critical',medium:'r-medium',low:'r-low'};
-  return m[r]||'r-unknown';
-}
-
-function dotClass(l){
-  const m={skin:'ds',fascia:'df',muscle:'dm',tendon:'dt',bone:'db',vessel:'dv'};
-  return m[l]||'du';
-}
-
-function showInfo(mesh){
-  const name=mesh.name||'(unnamed)';
-  const layer=meshLayer(mesh);
-  const a=getAnn(name);
-  rp.classList.remove('empty');
-  rp.innerHTML=`
-    <div class="iname">${a.zh}</div>
-    <div class="ien">${a.en||name}</div>
-    <div class="badges">
-      <span class="lbadge">
-        <span class="dot ${dotClass(layer)}"
-          style="display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle"></span>${layer}
-      </span>
-      <span class="rbadge ${rClass(a.wound_risk)}">⚠️ ${(a.wound_risk||'?').toUpperCase()}</span>
-    </div>
-    <hr class="sep"/>
-    <div class="isec">
-      <div class="ilabel">Clinical Notes</div>
-      <div class="ival">${a.notes}</div>
-    </div>
-    <div class="isec">
-      <div class="ilabel">Pressure Injury / Wound Stage</div>
-      <div class="ival">${a.pressure_injury_stage}</div>
-    </div>
-    <div class="isec">
-      <div class="ilabel">Blood Supply</div>
-      <div class="ival">${a.blood_supply}</div>
-    </div>
-    <div class="ctip">💡 ${a.clinical_tip}</div>
-    <div class="isec" style="margin-top:4px">
-      <div class="ilabel">GLB Mesh Name</div>
-      <div class="ival" style="color:#475569;font-size:10px">${name}</div>
-    </div>
-  `;
-}
-
-function clearInfo(){
-  rp.classList.add('empty');
-  rp.innerHTML='<div class="ehint">👆 Tap a structure<br/>to see anatomy info</div>';
-}
-
-// ── Raycaster ──
-const ray=new THREE.Raycaster(), ptr=new THREE.Vector2();
-let lastHL=null; const origEM=new WeakMap();
-
-function highlight(mesh){
-  if(lastHL&&lastHL!==mesh){
-    const ms=Array.isArray(lastHL.material)?lastHL.material:[lastHL.material];
-    ms.forEach(m=>{if(m&&origEM.has(m))m.emissive?.setHex(origEM.get(m));});
-  }
-  if(!mesh){lastHL=null;return;}
-  const ms=Array.isArray(mesh.material)?mesh.material:[mesh.material];
-  ms.forEach(m=>{
-    if(!m)return;
-    if(!origEM.has(m)&&m.emissive)origEM.set(m,m.emissive.getHex());
-    m.emissive?.setHex(0x112200);
-  });
-  lastHL=mesh;
-}
-
-canvas.addEventListener('pointerdown',e=>{
-  const rc=canvas.getBoundingClientRect();
-  ptr.x= ((e.clientX-rc.left)/rc.width )*2-1;
-  ptr.y=-((e.clientY-rc.top) /rc.height)*2+1;
-  ray.setFromCamera(ptr,camera);
-  const hits=ray.intersectObjects(root.children,true)
-    .filter(h=>h.object.isMesh&&h.object.visible);
-  if(!hits.length){highlight(null);clearInfo();return;}
-  highlight(hits[0].object);
-  showInfo(hits[0].object);
-});
+// Grid
+scene.add(new THREE.GridHelper(10, 20, 0x444444, 0x222222));
 
 // ── Load GLB ──
-const loader=new GLTFLoader();
-function loadGLB(src){
-  setStatus('loading…');
-  clearRoot(); highlight(null); clearInfo();
+const loader = new GLTFLoader();
+
+document.getElementById('fi').addEventListener('change', e => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  msg.style.color = '#facc15';
+  msg.textContent = `載入中: ${file.name} (${(file.size/1024/1024).toFixed(1)} MB)`;
+
+  const url = URL.createObjectURL(file);
+
   loader.load(
-    src,
-    gltf=>{
-      normalize(gltf.scene);
-      root.add(gltf.scene);
-      applyLayerVis();
-      applyWireframe(wfOn);
-      setStatus('loaded ✓');
-      updateStats();
+    url,
+    gltf => {
+      // 清除舊模型
+      scene.children
+        .filter(o => o.userData.isModel)
+        .forEach(o => scene.remove(o));
+
+      const model = gltf.scene;
+      model.userData.isModel = true;
+
+      // 自動縮放 + 置中
+      const box    = new THREE.Box3().setFromObject(model);
+      const size   = new THREE.Vector3();
+      const center = new THREE.Vector3();
+      box.getSize(size);
+      box.getCenter(center);
+
+      const maxDim = Math.max(size.x, size.y, size.z) || 1;
+      model.scale.setScalar(2 / maxDim);
+      model.position.sub(center.multiplyScalar(2 / maxDim));
+
+      scene.add(model);
+      URL.revokeObjectURL(url);
+
+      // 統計 mesh 數量
+      let meshCount = 0, meshNames = [];
+      model.traverse(o => {
+        if (o.isMesh) {
+          meshCount++;
+          if (o.name) meshNames.push(o.name);
+        }
+      });
+
+      msg.style.color = '#4ade80';
+      msg.textContent =
+        `✅ 載入成功！Meshes: ${meshCount}` +
+        (meshNames.length
+          ? `\nMesh names: ${meshNames.slice(0,5).join(', ')}${meshNames.length>5?'...':''}`
+          : '\n(無 mesh name)');
+
+      console.log('All mesh names:', meshNames);
     },
-    xhr=>{if(xhr.total)setStatus(((xhr.loaded/xhr.total)*100).toFixed(0)+'%');},
-    err=>{setStatus('load failed','#ef4444');console.error(err);}
+    xhr => {
+      if (xhr.total) {
+        const p = ((xhr.loaded / xhr.total) * 100).toFixed(0);
+        msg.style.color = '#facc15';
+        msg.textContent = `載入中: ${p}%`;
+      }
+    },
+    err => {
+      msg.style.color = '#f87171';
+      msg.textContent = '❌ 載入失敗: ' + (err.message || err);
+      console.error('GLB load error:', err);
+    }
   );
-}
-
-document.getElementById('loadDef').addEventListener('click',()=>{
-  loadGLB('./models/foot_ankle.glb');
 });
-document.getElementById('fi').addEventListener('change',e=>{
-  const f=e.target.files?.[0]; if(!f)return;
-  if(objUrl)URL.revokeObjectURL(objUrl);
-  objUrl=URL.createObjectURL(f);
-  loadGLB(objUrl);
-});
-
-// ── Layer toggles ──
-document.querySelectorAll('.lb').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const l=btn.dataset.layer;
-    layerVis[l]=!layerVis[l];
-    btn.classList.toggle('off',!layerVis[l]);
-    applyLayerVis();
-  });
-});
-
-// ── Control buttons ──
-const arBtn=document.getElementById('arBtn');
-arBtn.addEventListener('click',()=>{
-  controls.autoRotate=!controls.autoRotate;
-  arBtn.classList.toggle('on',controls.autoRotate);
-});
-
-const wfBtn=document.getElementById('wfBtn');
-wfBtn.addEventListener('click',()=>{
-  wfOn=!wfOn; wfBtn.classList.toggle('on',wfOn); applyWireframe(wfOn);
-});
-
-document.getElementById('rcBtn').addEventListener('click',()=>{
-  camera.position.set(0,.5,2.8);
-  controls.target.set(0,0,0);
-  controls.update();
-});
-
-const pbBtn=document.getElementById('pbBtn');
-pbBtn.addEventListener('click',()=>{
-  pauseBg=!pauseBg; pbBtn.classList.toggle('on',pauseBg);
-});
-
-document.querySelectorAll('.db2').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    renderer.setPixelRatio(Math.min(devicePixelRatio,Number(btn.dataset.dpr)));
-    document.querySelectorAll('.db2').forEach(b=>b.classList.toggle('on',b===btn));
-    resize();
-  });
-});
-
-// ── Stats ──
-function updateStats(){
-  let mc=0; root.traverse(o=>{if(o.isMesh)mc++;});
-  const i=renderer.info;
-  statsEl.textContent=
-`FPS: ${fps.toFixed(1)}
-Draw calls: ${i.render.calls}
-Triangles:  ${i.render.triangles.toLocaleString()}
-Meshes:     ${mc}
-Textures:   ${i.memory.textures}`;
-}
 
 // ── Render loop ──
-function tick(now){
-  if(!running)return;
-  animId=requestAnimationFrame(tick);
-  const dt=Math.max(.001,(now-lastTs)/1000);
-  lastTs=now; fpsAcc+=1/dt; fpsF++;
-  if(fpsF>=30){fps=fpsAcc/fpsF;fpsAcc=0;fpsF=0;updateStats();}
-  if(!(pauseBg&&document.hidden)){controls.update();renderer.render(scene,camera);}
-}
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
-window.addEventListener('resize',resize);
-resize();
-tick(performance.now());
-
-// ── Service Worker ──
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>
-    navigator.serviceWorker.register('/anatomy-pwa/sw.js').catch(console.error)
-  );
-}
+(function tick() {
+  requestAnimationFrame(tick);
+  controls.update();
+  renderer.render(scene, camera);
+})();
 </script>
 </body>
 </html>
