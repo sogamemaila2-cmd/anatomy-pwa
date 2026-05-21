@@ -5,180 +5,26 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>GLB Test</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #111827; overflow: hidden; }
-
-    /* canvas 唔接收 pointer，讓底層元素可以點擊 */
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { background:#111827; overflow:hidden; }
     #c {
-      position: fixed; inset: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
+      position:fixed; inset:0;
+      width:100%; height:100%;
+      pointer-events:none;
     }
-
-    /* 透明 overlay 專門俾 OrbitControls 用 */
     #orbit {
-      position: fixed; inset: 0;
-      z-index: 1;
+      position:fixed; inset:0; z-index:1;
     }
-
-    /* UI 在最頂，完全可以點擊 */
     #ui {
-      position: fixed; top: 16px; left: 16px;
-      z-index: 999;
-      background: rgba(15,23,42,.96);
-      border: 1px solid rgba(255,255,255,.15);
-      border-radius: 14px; padding: 14px;
-      display: flex; flex-direction: column; gap: 10px;
-      width: min(280px, calc(100vw - 32px));
-      font-family: -apple-system, sans-serif;
-      color: #e2e8f0;
+      position:fixed; top:16px; left:16px; z-index:9999;
+      background:rgba(15,23,42,.97);
+      border:1px solid rgba(255,255,255,.15);
+      border-radius:14px; padding:14px;
+      display:flex; flex-direction:column; gap:10px;
+      width:min(300px,calc(100vw - 32px));
+      font-family:-apple-system,sans-serif; color:#e2e8f0;
     }
+    h3 { font-size:14px; color:#f1f5f9; }
 
-    #ui h3 { font-size: 14px; color: #f1f5f9; }
-
-    #fi {
-      width: 100%; font-size: 13px; color: #e2e8f0;
-      background: #1e293b;
-      border: 1px solid rgba(255,255,255,.15);
-      border-radius: 8px; padding: 8px; cursor: pointer;
-    }
-    #fi::-webkit-file-upload-button {
-      background: #2563eb; color: #fff; border: none;
-      border-radius: 6px; padding: 6px 12px;
-      font-size: 13px; cursor: pointer; margin-right: 8px;
-    }
-
-    #msg {
-      font-size: 12px; line-height: 1.6; white-space: pre-wrap;
-      padding: 8px 10px; background: #0f172a;
-      border-radius: 8px; min-height: 40px; color: #4ade80;
-    }
-
-    #hint {
-      position: fixed; bottom: 12px; left: 50%;
-      transform: translateX(-50%);
-      z-index: 999; pointer-events: none;
-      font-size: 11px; color: #94a3b8;
-      background: rgba(0,0,0,.5);
-      padding: 5px 14px; border-radius: 20px;
-      font-family: -apple-system, sans-serif;
-    }
-  </style>
-</head>
-<body>
-
-<canvas id="c"></canvas>
-<div id="orbit"></div>   <!-- OrbitControls 綁這裡 -->
-
-<div id="ui">
-  <h3>🦴 GLB Tester</h3>
-  <input id="fi" type="file" accept=".glb,.gltf"/>
-  <div id="msg">等待載入...</div>
-</div>
-
-<div id="hint">Drag = orbit · Pinch = zoom</div>
-
-<script type="module">
-import * as THREE from
-  'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-import { OrbitControls } from
-  'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from
-  'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
-
-const msg = document.getElementById('msg');
-
-// ── Renderer ──
-const renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById('c'), antialias: true
-});
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.setClearColor(0x111827);
-
-const scene  = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.001, 1000);
-camera.position.set(0, 1, 4);
-
-// OrbitControls 綁 #orbit div，唔係 canvas
-const controls = new OrbitControls(camera, document.getElementById('orbit'));
-controls.enableDamping = true;
-
-// Lighting
-scene.add(new THREE.AmbientLight(0xffffff, 2));
-const sun = new THREE.DirectionalLight(0xffffff, 2.5);
-sun.position.set(5, 10, 5); scene.add(sun);
-scene.add(new THREE.GridHelper(10, 20, 0x334155, 0x1e293b));
-
-// ── Load GLB ──
-const loader = new GLTFLoader();
-let objUrl = null;
-
-document.getElementById('fi').addEventListener('change', e => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-
-  msg.style.color = '#facc15';
-  msg.textContent = `讀取: ${file.name}\n大小: ${(file.size/1024/1024).toFixed(2)} MB`;
-
-  if (objUrl) URL.revokeObjectURL(objUrl);
-  objUrl = URL.createObjectURL(file);
-
-  scene.children.filter(o => o.userData.isModel).forEach(o => scene.remove(o));
-
-  loader.load(
-    objUrl,
-    gltf => {
-      const model = gltf.scene;
-      model.userData.isModel = true;
-
-      const box = new THREE.Box3().setFromObject(model);
-      const sz  = new THREE.Vector3();
-      const ctr = new THREE.Vector3();
-      box.getSize(sz); box.getCenter(ctr);
-      const scale = 2 / (Math.max(sz.x, sz.y, sz.z) || 1);
-      model.scale.setScalar(scale);
-      model.position.copy(ctr).multiplyScalar(-scale);
-      scene.add(model);
-
-      const names = [];
-      model.traverse(o => { if (o.isMesh) names.push(o.name || '(no name)'); });
-
-      msg.style.color = '#4ade80';
-      msg.textContent =
-        `✅ 載入成功！\nMesh 數量: ${names.length}\n\n` +
-        names.slice(0, 10).join('\n') +
-        (names.length > 10 ? `\n...共 ${names.length} 個` : '');
-
-      console.log('ALL MESH NAMES:', names);
-      URL.revokeObjectURL(objUrl); objUrl = null;
-    },
-    xhr => {
-      if (xhr.total)
-        msg.textContent = `載入中 ${((xhr.loaded/xhr.total)*100).toFixed(0)}%`;
-    },
-    err => {
-      msg.style.color = '#f87171';
-      msg.textContent = '❌ 失敗:\n' + (err?.message || JSON.stringify(err));
-      console.error('LOAD ERROR:', err);
-    }
-  );
-});
-
-// ── Resize ──
-window.addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight);
-});
-
-// ── Render loop ──
-(function tick() {
-  requestAnimationFrame(tick);
-  controls.update();
-  renderer.render(scene, camera);
-})();
-</script>
-</body>
-</html>
+    /* 完全可見的 file input */
+    #
