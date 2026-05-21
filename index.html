@@ -52,107 +52,116 @@
 <div id="ui">
   <h3>🦴 GLB Tester</h3>
   <input id="fi" type="file" accept=".glb,.gltf"/>
-  <div id="msg">⏳ 載入 Three.js...</div>
+  <div id="msg">⏳ 載入中...</div>
 </div>
 <div id="hint">Drag = orbit · Pinch = zoom</div>
 
-<script type="module">
-// 本地檔案，唔依賴 CDN
-import * as THREE from './libs/three.module.js';
-import { OrbitControls } from './libs/OrbitControls.js';
-import { GLTFLoader } from './libs/GLTFLoader.js';
+<!-- UMD 版本：順序很重要，three 要最先 -->
+<script src="./libs/three.min.js"></script>
+<script src="./libs/OrbitControls.js"></script>
+<script src="./libs/GLTFLoader.js"></script>
 
-const msg = document.getElementById('msg');
-msg.textContent = '✅ Three.js 就緒\n請選擇 GLB 檔案';
+<script>
+// 唔用 type="module"，直接用全域 THREE
+var msg = document.getElementById('msg');
 
-const renderer = new THREE.WebGLRenderer({
-  canvas: document.getElementById('c'), antialias: true
-});
-renderer.setSize(innerWidth, innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.setClearColor(0x111827);
+if (typeof THREE === 'undefined') {
+  msg.style.color = '#f87171';
+  msg.textContent = '❌ THREE 未載入\n請確認 libs/ 資料夾有 3 個 JS 檔案';
+} else {
+  msg.textContent = '✅ Three.js 就緒\n請選擇 GLB 檔案';
 
-const scene  = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.001, 1000);
-camera.position.set(0, 1, 4);
-
-const controls = new OrbitControls(camera, document.getElementById('orbit'));
-controls.enableDamping = true;
-
-scene.add(new THREE.AmbientLight(0xffffff, 2));
-const sun = new THREE.DirectionalLight(0xffffff, 2.5);
-sun.position.set(5, 10, 5); scene.add(sun);
-scene.add(new THREE.GridHelper(10, 20, 0x334155, 0x1e293b));
-
-const loader = new GLTFLoader();
-
-document.getElementById('fi').addEventListener('change', e => {
-  const file = e.target.files?.[0];
-  if (!file) return;
-
-  msg.style.color = '#facc15';
-  msg.textContent = `📦 ${file.name}\n${(file.size/1024/1024).toFixed(2)} MB`;
-
-  const reader = new FileReader();
-
-  reader.onload = ev => {
-    msg.textContent = '⏳ 解析中...';
-    scene.children.filter(o => o.userData.isModel).forEach(o => scene.remove(o));
-
-    loader.parse(
-      ev.target.result, '',
-      gltf => {
-        const model = gltf.scene;
-        model.userData.isModel = true;
-
-        const box = new THREE.Box3().setFromObject(model);
-        const sz  = new THREE.Vector3();
-        const ctr = new THREE.Vector3();
-        box.getSize(sz); box.getCenter(ctr);
-        const s = 2 / (Math.max(sz.x, sz.y, sz.z) || 1);
-        model.scale.setScalar(s);
-        model.position.copy(ctr).multiplyScalar(-s);
-        scene.add(model);
-
-        const names = [];
-        model.traverse(o => { if (o.isMesh) names.push(o.name || '(no name)'); });
-
-        msg.style.color = '#4ade80';
-        msg.textContent =
-          `✅ 成功！Meshes: ${names.length}\n\n` +
-          names.slice(0, 12).join('\n') +
-          (names.length > 12 ? `\n...共 ${names.length} 個` : '');
-
-        console.log('MESH NAMES:', names);
-      },
-      err => {
-        msg.style.color = '#f87171';
-        msg.textContent = '❌ 解析失敗:\n' + (err?.message || String(err));
-        console.error(err);
-      }
-    );
-  };
-
-  reader.onerror = () => {
-    msg.style.color = '#f87171';
-    msg.textContent = '❌ FileReader 失敗';
-  };
-
-  reader.readAsArrayBuffer(file);
-});
-
-window.addEventListener('resize', () => {
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
+  var renderer = new THREE.WebGLRenderer({
+    canvas: document.getElementById('c'), antialias: true
+  });
   renderer.setSize(innerWidth, innerHeight);
-});
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.setClearColor(0x111827);
 
-(function tick() {
-  requestAnimationFrame(tick);
-  controls.update();
-  renderer.render(scene, camera);
-})();
+  var scene  = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.001, 1000);
+  camera.position.set(0, 1, 4);
+
+  var controls = new THREE.OrbitControls(camera, document.getElementById('orbit'));
+  controls.enableDamping = true;
+
+  scene.add(new THREE.AmbientLight(0xffffff, 2));
+  var sun = new THREE.DirectionalLight(0xffffff, 2.5);
+  sun.position.set(5, 10, 5); scene.add(sun);
+  scene.add(new THREE.GridHelper(10, 20, 0x334155, 0x1e293b));
+
+  var loader = new THREE.GLTFLoader();
+
+  document.getElementById('fi').addEventListener('change', function(e) {
+    var file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    msg.style.color = '#facc15';
+    msg.textContent = '📦 ' + file.name + '\n' + (file.size/1024/1024).toFixed(2) + ' MB';
+
+    var reader = new FileReader();
+
+    reader.onload = function(ev) {
+      msg.textContent = '⏳ 解析中...';
+
+      scene.children.filter(function(o){ return o.userData.isModel; })
+        .forEach(function(o){ scene.remove(o); });
+
+      loader.parse(
+        ev.target.result, '',
+        function(gltf) {
+          var model = gltf.scene;
+          model.userData.isModel = true;
+
+          var box = new THREE.Box3().setFromObject(model);
+          var sz  = new THREE.Vector3();
+          var ctr = new THREE.Vector3();
+          box.getSize(sz); box.getCenter(ctr);
+          var s = 2 / (Math.max(sz.x, sz.y, sz.z) || 1);
+          model.scale.setScalar(s);
+          model.position.copy(ctr).multiplyScalar(-s);
+          scene.add(model);
+
+          var names = [];
+          model.traverse(function(o){ if(o.isMesh) names.push(o.name || '(no name)'); });
+
+          msg.style.color = '#4ade80';
+          msg.textContent =
+            '✅ 成功！Meshes: ' + names.length + '\n\n' +
+            names.slice(0,12).join('\n') +
+            (names.length > 12 ? '\n...共 ' + names.length + ' 個' : '');
+
+          console.log('MESH NAMES:', names);
+        },
+        function(err) {
+          msg.style.color = '#f87171';
+          msg.textContent = '❌ 解析失敗:\n' + (err && err.message || String(err));
+          console.error(err);
+        }
+      );
+    };
+
+    reader.onerror = function() {
+      msg.style.color = '#f87171';
+      msg.textContent = '❌ FileReader 失敗';
+    };
+
+    reader.readAsArrayBuffer(file);
+  });
+
+  window.addEventListener('resize', function() {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+
+  (function tick() {
+    requestAnimationFrame(tick);
+    controls.update();
+    renderer.render(scene, camera);
+  })();
+}
 </script>
 </body>
 </html>
