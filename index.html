@@ -27,4 +27,161 @@
     h3 { font-size:14px; color:#f1f5f9; }
 
     /* 完全可見的 file input */
-    #
+    #fi {
+      display:block; width:100%;
+      font-size:14px; color:#e2e8f0;
+      background:#1e293b;
+      border:2px solid #3b82f6;
+      border-radius:10px; padding:10px;
+      cursor:pointer;
+    }
+    #fi::-webkit-file-upload-button {
+      background:#2563eb; color:#fff; border:none;
+      border-radius:6px; padding:7px 14px;
+      font-size:13px; cursor:pointer; margin-right:8px;
+    }
+    #fi::file-selector-button {
+      background:#2563eb; color:#fff; border:none;
+      border-radius:6px; padding:7px 14px;
+      font-size:13px; cursor:pointer; margin-right:8px;
+    }
+
+    #msg {
+      font-size:12px; line-height:1.65; white-space:pre-wrap;
+      padding:10px; background:#0f172a;
+      border-radius:8px; min-height:44px; color:#4ade80;
+    }
+    #hint {
+      position:fixed; bottom:12px; left:50%;
+      transform:translateX(-50%); z-index:9999;
+      pointer-events:none; font-size:11px; color:#94a3b8;
+      background:rgba(0,0,0,.5); padding:5px 14px;
+      border-radius:20px; font-family:sans-serif;
+    }
+  </style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="orbit"></div>
+<div id="ui">
+  <h3>🦴 GLB Tester</h3>
+  <input id="fi" type="file" accept=".glb,.gltf" multiple/>
+  <div id="msg">等待選擇檔案...</div>
+</div>
+<div id="hint">Drag = orbit · Pinch = zoom</div>
+
+<script type="module">
+import * as THREE from
+  'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import { OrbitControls } from
+  'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from
+  'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+
+const msg = document.getElementById('msg');
+const fi  = document.getElementById('fi');
+
+// ── Renderer ──
+const renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById('c'), antialias: true
+});
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.setClearColor(0x111827);
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, innerWidth/innerHeight, 0.001, 1000);
+camera.position.set(0, 1, 4);
+
+const controls = new OrbitControls(camera, document.getElementById('orbit'));
+controls.enableDamping = true;
+
+scene.add(new THREE.AmbientLight(0xffffff, 2));
+const sun = new THREE.DirectionalLight(0xffffff, 2.5);
+sun.position.set(5, 10, 5); scene.add(sun);
+scene.add(new THREE.GridHelper(10, 20, 0x334155, 0x1e293b));
+
+const loader = new GLTFLoader();
+let objUrl = null;
+
+function loadFile(file) {
+  if (!file) return;
+
+  // 確認係 GLB/GLTF
+  const ok = file.name.match(/\.(glb|gltf)$/i) || file.type.includes('gltf');
+  if (!ok) {
+    msg.style.color = '#f87171';
+    msg.textContent = `❌ 唔係 GLB 檔案:\n${file.name}`;
+    return;
+  }
+
+  msg.style.color = '#facc15';
+  msg.textContent = `📦 讀取: ${file.name}\n大小: ${(file.size/1024/1024).toFixed(2)} MB`;
+
+  if (objUrl) { URL.revokeObjectURL(objUrl); objUrl = null; }
+  objUrl = URL.createObjectURL(file);
+
+  scene.children.filter(o => o.userData.isModel).forEach(o => {
+    o.traverse(c => { c.geometry?.dispose(); });
+    scene.remove(o);
+  });
+
+  loader.load(
+    objUrl,
+    gltf => {
+      const model = gltf.scene;
+      model.userData.isModel = true;
+
+      const box = new THREE.Box3().setFromObject(model);
+      const sz  = new THREE.Vector3();
+      const ctr = new THREE.Vector3();
+      box.getSize(sz); box.getCenter(ctr);
+      const s = 2 / (Math.max(sz.x, sz.y, sz.z) || 1);
+      model.scale.setScalar(s);
+      model.position.copy(ctr).multiplyScalar(-s);
+      scene.add(model);
+
+      const names = [];
+      model.traverse(o => { if (o.isMesh) names.push(o.name || '(no name)'); });
+
+      msg.style.color = '#4ade80';
+      msg.textContent =
+        `✅ 載入成功！Meshes: ${names.length}\n\n` +
+        names.slice(0, 12).join('\n') +
+        (names.length > 12 ? `\n...共 ${names.length} 個` : '');
+
+      console.log('MESH NAMES:', names);
+      URL.revokeObjectURL(objUrl); objUrl = null;
+    },
+    xhr => {
+      if (xhr.total)
+        msg.textContent = `⏳ ${((xhr.loaded/xhr.total)*100).toFixed(0)}% - ${file.name}`;
+    },
+    err => {
+      msg.style.color = '#f87171';
+      msg.textContent = '❌ 載入失敗:\n' + (err?.message || String(err));
+      console.error('GLB ERROR:', err);
+      URL.revokeObjectURL(objUrl); objUrl = null;
+    }
+  );
+}
+
+// 同時監聽 input 同 change（Safari 有時只觸發其中一個）
+fi.addEventListener('input',  e => loadFile(e.target.files?.[0]));
+fi.addEventListener('change', e => loadFile(e.target.files?.[0]));
+
+window.addEventListener('resize', () => {
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+(function tick() {
+  requestAnimationFrame(tick);
+  controls.update();
+  renderer.render(scene, camera);
+})();
+</script>
+</body>
+</html>
