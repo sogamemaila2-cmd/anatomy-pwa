@@ -1,0 +1,252 @@
+{
+  "calcaneus": {
+    "zh": "跟骨",
+    "en": "Calcaneus",
+    "layer": "bone",
+    "notes": "壓瘡高危位置：跟骨後方 (NPUAP Stage 分期依深度)",
+    "wound_risk": "high",
+    "pressure_injury_stage": "可達 Stage 3–4（若累及骨膜）",
+    "blood_supply": "跟骨動脈（腓動脈分支）",
+    "clinical_tip": "跟部壓瘡：優先排除深部骨組織感染，考慮 X-ray / MRI"
+  },
+  "metatarsal_1": {
+    "zh": "第一蹠骨",
+    "en": "1st Metatarsal",
+    "layer": "bone",
+    "notes": "糖尿病足高危：蹠骨頭受壓區，Wagner Grade 評估",
+    "wound_risk": "high",
+    "pressure_injury_stage": "Wagner Grade 1–5",
+    "blood_supply": "足背動脈（脛前動脈終支）",
+    "clinical_tip": "檢查 ABI / TBI，評估血供後再決定清創策略"
+  },
+  "metatarsal_2": {
+    "zh": "第二蹠骨",
+    "en": "2nd Metatarsal",
+    "layer": "bone",
+    "notes": "轉移性蹠骨頭壓力，常見於第一蹠骨切除後",
+    "wound_risk": "medium",
+    "pressure_injury_stage": "Wagner Grade 1–3",
+    "blood_supply": "足背動脈",
+    "clinical_tip": "術後足部壓力重新分佈，需要特製減壓鞋墊"
+  },
+  "metatarsal_3": {
+    "zh": "第三蹠骨",
+    "en": "3rd Metatarsal",
+    "layer": "bone",
+    "notes": "中足受壓區",
+    "wound_risk": "medium",
+    "pressure_injury_stage": "Wagner Grade 1–2",
+    "blood_supply": "足底動脈弓",
+    "clinical_tip": "評估步態及足底壓力分佈"
+  },
+  "metatarsal_4": {
+    "zh": "第四蹠骨",
+    "en": "4th Metatarsal",
+    "layer": "bone",
+    "notes": "外側蹠骨，小趾側壓力集中",
+    "wound_risk": "medium",
+    "pressure_injury_stage": "Wagner Grade 1–2",
+    "blood_supply": "外側蹠動脈",
+    "clinical_tip": "注意不合適鞋具引起的外側壓力損傷"
+  },
+  "metatarsal_5": {
+    "zh": "第五蹠骨",
+    "en": "5th Metatarsal",
+    "layer": "bone",
+    "notes": "外側足緣高危：小趾蹠骨基部壓瘡常見",
+    "wound_risk": "high",
+    "pressure_injury_stage": "Wagner Grade 1–3",
+    "blood_supply": "腓動脈穿支",
+    "clinical_tip": "臥床患者需注意外側足緣減壓，避免直接接觸床面"
+  },
+  "tibia": {
+    "zh": "脛骨",
+    "en": "Tibia",
+    "layer": "bone",
+    "notes": "小腿前方骨性突出，皮下組織薄，壓瘡風險高",
+    "wound_risk": "high",
+    "pressure_injury_stage": "Stage 3–4（軟組織薄）",
+    "blood_supply": "脛前動脈骨膜支",
+    "clinical_tip": "夾板 / 石膏固定時需加強脛骨前方減壓墊"
+  },
+  "fibula": {
+    "zh": "腓骨",
+    "en": "Fibula",
+    "layer": "bone",
+    "notes": "外踝及腓骨頭壓瘡高危，側臥時尤甚",
+    "wound_risk": "high",
+    "pressure_injury_stage": "Stage 2–4",
+    "blood_supply": "腓動脈",
+    "clinical_tip": "側臥患者需外踝減壓，每 2 小時翻身記錄"
+  },
+  "talus": {
+    "zh": "距骨",
+    "en": "Talus",
+    "layer": "bone",
+    "notes": "踝關節核心骨，無肌肉附著，血供脆弱",
+    "wound_risk": "medium",
+    "pressure_injury_stage": "深部組織損傷（DTI）風險",
+    "blood_supply": "血供有限，壞死風險高",
+    "clinical_tip": "距骨骨折後需特別注意缺血性壞死可能"
+  },
+  "navicular": {
+    "zh": "舟狀骨",
+    "en": "Navicular",
+    "layer": "bone",
+    "notes": "足內側弓頂點，扁平足患者壓力集中",
+    "wound_risk": "medium",
+    "pressure_injury_stage": "Stage 1–3",
+    "blood_supply": "足背動脈內側支",
+    "clinical_tip": "評估足弓高度及鞋具支撐"
+  },
+  "achilles_tendon": {
+    "zh": "阿基里斯腱（跟腱）",
+    "en": "Achilles Tendon",
+    "layer": "tendon",
+    "notes": "肌腱外露 = NPUAP Stage 4 或 Unstageable",
+    "wound_risk": "critical",
+    "pressure_injury_stage": "Stage 4 / Unstageable（肌腱外露）",
+    "blood_supply": "血供差，中段乏血管區，癒合極慢",
+    "clinical_tip": "Tendon exposure → 優先 NPWT + 外科轉介，保持濕潤環境"
+  },
+  "tibialis_anterior": {
+    "zh": "脛前肌",
+    "en": "Tibialis Anterior",
+    "layer": "muscle",
+    "notes": "小腿前側主要背屈肌，下肢靜脈潰瘍鑑別位置",
+    "wound_risk": "medium",
+    "pressure_injury_stage": "肌肉外露 = Stage 4",
+    "blood_supply": "脛前動脈",
+    "clinical_tip": "靜脈潰瘍多見於踝上方，評估 ABPI 排除動脈成分"
+  },
+  "tibialis_posterior": {
+    "zh": "脛後肌",
+    "en": "Tibialis Posterior",
+    "layer": "muscle",
+    "notes": "足弓主要支撐肌，肌腱炎常見",
+    "wound_risk": "low",
+    "pressure_injury_stage": "—",
+    "blood_supply": "脛後動脈",
+    "clinical_tip": "脛後動脈搏動評估點，糖尿病足必查"
+  },
+  "peroneus_longus": {
+    "zh": "腓骨長肌",
+    "en": "Peroneus Longus",
+    "layer": "muscle",
+    "notes": "外側小腿肌群，外踝後方走行",
+    "wound_risk": "low",
+    "pressure_injury_stage": "—",
+    "blood_supply": "腓動脈肌支",
+    "clinical_tip": "外踝壓瘡清創時注意保護腓骨長肌腱"
+  },
+  "gastrocnemius": {
+    "zh": "腓腸肌",
+    "en": "Gastrocnemius",
+    "layer": "muscle",
+    "notes": "小腿後側最大肌群，深靜脈血栓高危",
+    "wound_risk": "medium",
+    "pressure_injury_stage": "肌肉壞死 = Stage 4",
+    "blood_supply": "膕動脈肌支",
+    "clinical_tip": "小腿腫脹 + 壓痛 → 考慮 DVT，超聲波排查後才決定壓迫治療"
+  },
+  "soleus": {
+    "zh": "比目魚肌",
+    "en": "Soleus",
+    "layer": "muscle",
+    "notes": "深層小腿肌，靜脈竇豐富，DVT 常發源地",
+    "wound_risk": "medium",
+    "pressure_injury_stage": "—",
+    "blood_supply": "脛後動脈肌支",
+    "clinical_tip": "VTE 預防重點肌群，術後早期踝泵運動針對此肌"
+  },
+  "plantar_fascia": {
+    "zh": "足底筋膜",
+    "en": "Plantar Fascia",
+    "layer": "fascia",
+    "notes": "足底壓力潰瘍深度評估關鍵層次",
+    "wound_risk": "high",
+    "pressure_injury_stage": "筋膜累及 = Stage 3 以上",
+    "blood_supply": "足底動脈",
+    "clinical_tip": "足底潰瘍清創時需判斷是否到達筋膜層，影響分期"
+  },
+  "deep_fascia": {
+    "zh": "深筋膜",
+    "en": "Deep Fascia (Crural)",
+    "layer": "fascia",
+    "notes": "小腿筋膜室隔層，筋膜室綜合症關鍵結構",
+    "wound_risk": "medium",
+    "pressure_injury_stage": "筋膜外露 = Stage 3",
+    "blood_supply": "筋膜血管叢",
+    "clinical_tip": "骨折後注意筋膜室壓力升高，6P 徵象監測"
+  },
+  "skin_dorsum": {
+    "zh": "足背皮膚",
+    "en": "Dorsal Skin",
+    "layer": "skin",
+    "notes": "糖尿病足：皮膚完整性評估，注意乾裂 / 浸漬",
+    "wound_risk": "medium",
+    "pressure_injury_stage": "Stage 1–2（完整或淺層破損）",
+    "blood_supply": "皮下血管叢",
+    "clinical_tip": "保濕、減壓、每日視覺檢查；注意趾縫浸漬"
+  },
+  "skin_plantar": {
+    "zh": "足底皮膚",
+    "en": "Plantar Skin",
+    "layer": "skin",
+    "notes": "承重區皮膚，角質層厚，潰瘍常被硬繭掩蓋",
+    "wound_risk": "high",
+    "pressure_injury_stage": "Wagner Grade 1–5",
+    "blood_supply": "足底皮膚血管叢",
+    "clinical_tip": "定期清除過厚角質，露出潰瘍真實邊界再評估深度"
+  },
+  "skin_heel": {
+    "zh": "跟部皮膚",
+    "en": "Heel Skin",
+    "layer": "skin",
+    "notes": "壓瘡第二高危位置（僅次於薦骨），臥床患者必查",
+    "wound_risk": "critical",
+    "pressure_injury_stage": "Stage 1–4 / DTI / Unstageable",
+    "blood_supply": "跟骨皮膚血管叢（脆弱）",
+    "clinical_tip": "懸浮跟部（Heel Float）為首選預防策略，勿使用甜甜圈型圈墊"
+  },
+  "posterior_tibial_artery": {
+    "zh": "脛後動脈",
+    "en": "Posterior Tibial Artery",
+    "layer": "vessel",
+    "notes": "糖尿病足血供評估必查動脈，內踝後方觸診",
+    "wound_risk": "critical",
+    "pressure_injury_stage": "血管阻塞 → 缺血性壞疽",
+    "blood_supply": "供應足底及後足",
+    "clinical_tip": "ABI < 0.9 提示周圍動脈病變，< 0.4 為嚴重缺血，轉介血管外科"
+  },
+  "dorsalis_pedis_artery": {
+    "zh": "足背動脈",
+    "en": "Dorsalis Pedis Artery",
+    "layer": "vessel",
+    "notes": "足背動脈搏動觸診點，第一二蹠骨間",
+    "wound_risk": "critical",
+    "pressure_injury_stage": "阻塞 → 前足缺血",
+    "blood_supply": "供應足背及前足",
+    "clinical_tip": "搏動消失 + 傷口不癒 → 緊急血管評估，Doppler 超聲波"
+  },
+  "great_saphenous_vein": {
+    "zh": "大隱靜脈",
+    "en": "Great Saphenous Vein",
+    "layer": "vessel",
+    "notes": "下肢靜脈潰瘍最相關靜脈，內踝上方常見潰瘍位置",
+    "wound_risk": "high",
+    "pressure_injury_stage": "靜脈潰瘍（Venous Leg Ulcer）",
+    "blood_supply": "回流至股靜脈",
+    "clinical_tip": "ABPI ≥ 0.8 → 可用壓迫治療；< 0.8 → 禁用強壓迫，轉介"
+  },
+  "default": {
+    "zh": "未命名結構",
+    "en": "Unnamed Structure",
+    "layer": "unknown",
+    "notes": "此 mesh 尚未加入 annotation",
+    "wound_risk": "unknown",
+    "pressure_injury_stage": "—",
+    "blood_supply": "—",
+    "clinical_tip": "請將此 mesh name 加入 annotations.json 對應 key"
+  }
+}
