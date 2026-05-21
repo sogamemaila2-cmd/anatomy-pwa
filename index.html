@@ -57,18 +57,14 @@
 <div id="hint">Drag = orbit · Pinch = zoom</div>
 
 <script type="module">
-// 完整 CDN URL，唔用 importmap
-import * as THREE from
-  'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-import { OrbitControls } from
-  'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from
-  'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
+// 本地檔案，唔依賴 CDN
+import * as THREE from './libs/three.module.js';
+import { OrbitControls } from './libs/OrbitControls.js';
+import { GLTFLoader } from './libs/GLTFLoader.js';
 
 const msg = document.getElementById('msg');
 msg.textContent = '✅ Three.js 就緒\n請選擇 GLB 檔案';
 
-// ── Renderer ──
 const renderer = new THREE.WebGLRenderer({
   canvas: document.getElementById('c'), antialias: true
 });
@@ -89,7 +85,6 @@ const sun = new THREE.DirectionalLight(0xffffff, 2.5);
 sun.position.set(5, 10, 5); scene.add(sun);
 scene.add(new THREE.GridHelper(10, 20, 0x334155, 0x1e293b));
 
-// ── Load GLB via FileReader ──
 const loader = new GLTFLoader();
 
 document.getElementById('fi').addEventListener('change', e => {
